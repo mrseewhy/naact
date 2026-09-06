@@ -1,0 +1,53 @@
+name: linter
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install PHP Dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Check PHP Formatting
+        run: vendor/bin/pint --test
+
+      - name: Check Frontend Formatting
+        run: npm run format:check
+
+      - name: Check Frontend Linting
+        run: npm run lint:check
+
+      - name: Check TypeScript
+        run: npm run types
+
+      - name: Build Frontend
+        run: npm run build
