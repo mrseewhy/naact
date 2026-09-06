@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,8 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('access-admin', fn (User $user): bool => $user->is_admin);
+        Gate::define('access-admin', fn(User $user): bool => $user->is_admin);
 
-        Inertia::share('appUrl', fn () => config('app.url'));
+        Inertia::share('appUrl', fn() => config('app.url'));
+
+        Schema::defaultStringLength(191);
     }
 }
