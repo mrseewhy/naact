@@ -5,6 +5,7 @@ use App\Models\Event;
 use App\Models\Post;
 use App\Models\Programme;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 test('a valid contact submission is stored', function () {
     $this->post(route('contact.store'), [
@@ -185,6 +186,33 @@ test('an event without an end date is stored as a one-day event', function () {
 
     expect($event->fresh()->end_date)->toBeNull();
 });
+
+test('event and programme galleries reject batches above the 60 image limit', function (string $routeName, array $attributes) {
+    $this->actingAs(User::factory()->create());
+
+    $response = $this->post(route($routeName), [
+        ...$attributes,
+        'gallery' => array_map(
+            fn (int $index) => UploadedFile::fake()->image("gallery-{$index}.jpg"),
+            range(1, 61),
+        ),
+    ]);
+
+    $response->assertSessionHasErrors('gallery');
+})->with([
+    'event' => ['events.store', [
+        'title' => 'Large Event Gallery',
+        'slug' => 'large-event-gallery',
+        'description' => 'An event with too many gallery images.',
+        'start_date' => '2026-10-20 10:00:00',
+    ]],
+    'programme' => ['programmes.store', [
+        'title' => 'Large Programme Gallery',
+        'slug' => 'large-programme-gallery',
+        'description' => 'A programme with too many gallery images.',
+        'date_of_event' => '2026-10-20 10:00:00',
+    ]],
+]);
 
 test('an event can delete only images from its own gallery', function () {
     $this->actingAs(User::factory()->create());

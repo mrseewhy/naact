@@ -22,6 +22,30 @@ test('a programme detail page receives its programme date', function () {
         );
 });
 
+test('home shows the most recent programmes when no upcoming programmes exist', function () {
+    Carbon::setTestNow('2026-09-06 12:00:00');
+
+    $older = Programme::create([
+        'title' => 'Older Programme',
+        'slug' => 'older-programme',
+        'description' => 'An older community programme.',
+        'date_of_event' => '2026-08-01',
+    ]);
+    $recent = Programme::create([
+        'title' => 'Recent Programme',
+        'slug' => 'recent-programme',
+        'description' => 'A recent community programme.',
+        'date_of_event' => '2026-09-01',
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('programmes', 2)
+            ->where('programmes.0.id', $recent->id)
+            ->where('programmes.1.id', $older->id));
+});
+
 test('programme pages separate and order upcoming and past programmes', function () {
     Carbon::setTestNow('2026-09-06 12:00:00');
 

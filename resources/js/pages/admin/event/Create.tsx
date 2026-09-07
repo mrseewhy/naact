@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
+import { addGalleryFiles, IMAGE_ACCEPT, MAX_GALLERY_IMAGES } from '@/lib/gallery-upload';
 import { slugify } from '@/lib/slugify';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -45,8 +46,8 @@ export default function Create() {
             onSuccess: () => {
                 reset();
             },
-            onError: () => {
-                toast.error('An error occurred while creating the category.');
+            onError: (formErrors) => {
+                toast.error(Object.values(formErrors)[0] ?? 'The event could not be created.');
             },
         });
     };
@@ -187,7 +188,7 @@ export default function Create() {
                                 id="image"
                                 type="file"
                                 name="image"
-                                accept="image/*"
+                                accept={IMAGE_ACCEPT}
                                 className="file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-green-800 file:px-4 file:py-1 file:text-white hover:file:bg-green-700"
                                 onChange={(e) => {
                                     setData('image', e.target.files?.[0] ?? null);
@@ -235,15 +236,17 @@ export default function Create() {
                                 id="gallery"
                                 type="file"
                                 name="gallery"
-                                accept="image/*"
+                                accept={IMAGE_ACCEPT}
                                 multiple
                                 className="file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-800 file:px-4 file:py-1 file:text-white hover:file:bg-blue-700"
                                 onChange={(e) => {
                                     const files = Array.from(e.target.files ?? []);
-                                    // Combine existing gallery images with new ones
-                                    const existingGallery = data.gallery || [];
-                                    const combinedGallery = [...existingGallery, ...files];
-                                    setData('gallery', combinedGallery);
+                                    const selection = addGalleryFiles(data.gallery, files);
+                                    if (selection.error) {
+                                        toast.error(selection.error);
+                                    } else {
+                                        setData('gallery', selection.files);
+                                    }
                                     if (errors.gallery) {
                                         clearErrors('gallery');
                                     }
@@ -251,7 +254,7 @@ export default function Create() {
                                     e.target.value = '';
                                 }}
                             />
-                            <p className="mt-1 text-sm text-gray-600">Select multiple images for the event gallery</p>
+                            <p className="mt-1 text-sm text-gray-600">Up to {MAX_GALLERY_IMAGES} JPG, PNG, GIF, or WebP images; maximum 2 MB each.</p>
                             {errors.gallery && <span className="text-sm text-red-600">{errors.gallery}</span>}
 
                             {/* Gallery Preview */}

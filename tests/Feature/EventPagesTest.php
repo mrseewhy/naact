@@ -45,3 +45,27 @@ test('event pages separate and order upcoming and past events', function () {
             ->where('events.0.id', $ongoing->id)
             ->where('events.1.id', $upcoming->id));
 });
+
+test('home shows the most recent events when no upcoming events exist', function () {
+    Carbon::setTestNow('2026-09-06 12:00:00');
+
+    $older = Event::create([
+        'title' => 'Older Event',
+        'slug' => 'older-event',
+        'description' => 'An older community event.',
+        'start_date' => '2026-08-01',
+    ]);
+    $recent = Event::create([
+        'title' => 'Recent Event',
+        'slug' => 'recent-event',
+        'description' => 'A recent community event.',
+        'start_date' => '2026-09-01',
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('events', 2)
+            ->where('events.0.id', $recent->id)
+            ->where('events.1.id', $older->id));
+});

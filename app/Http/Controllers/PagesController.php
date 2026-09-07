@@ -13,8 +13,17 @@ class PagesController extends Controller
     {
         $posts = Post::with('category')->latest()->take(3)->get();
         $events = Event::upcoming()->take(3)->get();
-
         $programmes = Programme::upcoming()->take(3)->get();
+
+        // Keep the homepage useful when all published content has already taken place.
+        // Upcoming content remains the priority, with the most recent records as a fallback.
+        if ($events->isEmpty()) {
+            $events = Event::query()->orderByDesc('start_date')->take(3)->get();
+        }
+
+        if ($programmes->isEmpty()) {
+            $programmes = Programme::query()->orderByDesc('date_of_event')->take(3)->get();
+        }
 
         return Inertia::render('all-pages/Home', ['posts' => $posts, 'events' => $events, 'programmes' => $programmes]);
     }

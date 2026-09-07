@@ -65,46 +65,48 @@ const Programmes = ({ upcomingProgrammes, pastProgrammes }: ProgrammesProps) => 
         <Head title="Programmes" />
         <PageHeader title="Programmes" />
 
-        <section className="bg-white py-16">
-            <div className="container mx-auto max-w-7xl px-4">
-                <div className="mb-10 max-w-3xl">
-                    <p className="mb-2 font-head text-sm font-bold tracking-widest text-green-700 uppercase">Learn, grow and connect</p>
-                    <h1 className="font-head text-3xl font-bold text-green-950 md:text-4xl">Upcoming Programmes</h1>
-                    <p className="mt-3 leading-7 text-gray-600">
-                        Explore initiatives designed to support, empower, and connect members of our community.
-                    </p>
-                </div>
-
-                {upcomingProgrammes.data.length > 0 ? (
-                    <>
-                        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-                            {upcomingProgrammes.data.map((programme) => (
-                                <ProgrammeCard key={programme.id} programme={programme} />
-                            ))}
-                        </div>
-                        {(upcomingProgrammes.last_page ?? 1) > 1 && (
-                            <div className="mt-10">
-                                <ReusablePagination data={upcomingProgrammes} />
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <div className="rounded-2xl border border-dashed border-green-200 bg-white px-6 py-16 text-center">
-                        <Users className="mx-auto mb-5 size-12 text-green-700" />
-                        <h2 className="font-head text-2xl font-bold text-green-950">No upcoming programmes at the moment</h2>
-                        <p className="mx-auto mt-3 max-w-xl text-gray-600">
-                            New opportunities will appear here when they are announced. Learn more about NAACT in the meantime.
+        {(upcomingProgrammes.data.length > 0 || pastProgrammes.data.length === 0) && (
+            <section className="bg-white py-16">
+                <div className="container mx-auto max-w-7xl px-4">
+                    <div className="mb-10 max-w-3xl">
+                        <p className="mb-2 font-head text-sm font-bold tracking-widest text-green-700 uppercase">Learn, grow and connect</p>
+                        <h1 className="font-head text-3xl font-bold text-green-950 md:text-4xl">Upcoming Programmes</h1>
+                        <p className="mt-3 leading-7 text-gray-600">
+                            Explore initiatives designed to support, empower, and connect members of our community.
                         </p>
-                        <Link
-                            href="/about"
-                            className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-800 px-6 py-3 font-head font-semibold text-white hover:bg-green-700"
-                        >
-                            About NAACT <ArrowRight className="size-4" />
-                        </Link>
                     </div>
-                )}
-            </div>
-        </section>
+
+                    {upcomingProgrammes.data.length > 0 ? (
+                        <>
+                            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                                {upcomingProgrammes.data.map((programme) => (
+                                    <ProgrammeCard key={programme.id} programme={programme} />
+                                ))}
+                            </div>
+                            {(upcomingProgrammes.last_page ?? 1) > 1 && (
+                                <div className="mt-10">
+                                    <ReusablePagination data={upcomingProgrammes} />
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="rounded-2xl border border-dashed border-green-200 bg-white px-6 py-16 text-center">
+                            <Users className="mx-auto mb-5 size-12 text-green-700" />
+                            <h2 className="font-head text-2xl font-bold text-green-950">No upcoming programmes at the moment</h2>
+                            <p className="mx-auto mt-3 max-w-xl text-gray-600">
+                                New opportunities will appear here when they are announced. Learn more about NAACT in the meantime.
+                            </p>
+                            <Link
+                                href="/about"
+                                className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-800 px-6 py-3 font-head font-semibold text-white hover:bg-green-700"
+                            >
+                                About NAACT <ArrowRight className="size-4" />
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </section>
+        )}
 
         {pastProgrammes.data.length > 0 && (
             <section className="border-t border-gray-100 bg-white py-16">

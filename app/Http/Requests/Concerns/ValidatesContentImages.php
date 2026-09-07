@@ -14,7 +14,7 @@ trait ValidatesContentImages
     protected function galleryImageRules(): array
     {
         return [
-            'gallery' => ['nullable', 'array'],
+            'gallery' => ['nullable', 'array', 'max:60'],
             'gallery.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ];
     }
