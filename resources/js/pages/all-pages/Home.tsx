@@ -24,10 +24,10 @@ const Home = ({ programmes, events, posts }: HomeProps) => {
             <Hero />
             <CounterSection />
             <AboutSection />
-            <ProgrammesSection programmes={programmes} />
+            <EventsSection events={events} />
             <GetInvolvedSection />
             <BusinessCTA />
-            <EventsSection events={events} />
+            <ProgrammesSection programmes={programmes} />
             <BlogSection posts={posts} />
             <ContactSection />
         </>
